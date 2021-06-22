@@ -1,37 +1,32 @@
+import React, { useEffect, useState } from "react";
 import ViewShowNews from "../components/ShowNews.view"
+import NewFirebaseClient from "../services/NewFirebaseClient";
 
 function ViewNews() {
 
-    let myNews = [
-        {
-            uuid: "123",
-            title: "opa",
-            date: "05/05/2005",
-            body: "Super notícia"
-        },
-        {
-            uuid: "321",
-            title: "opa2",
-            date: "10/10/2010",
-            body: "Super notícia 2"
-        }
-    ]
+    const [newsFeed, setNewsFeed] = useState([]);
 
-    console.log(myNews)
+    useEffect(() => {
+        async function fetchData() {
+
+            const newFirebaseClient = new NewFirebaseClient()
+            const allNews = await newFirebaseClient.getAllNews()
+
+            let showNews = allNews.map((noticia) => (
+                <ViewShowNews key={noticia.uuid} title={noticia.title} date={noticia.date} body={noticia.body}></ViewShowNews>
+            ))
+
+            setNewsFeed(showNews)
+        }
+
+        fetchData();
+    }, []);
 
     return (
         <div>
             Ver Notícias<br />
-            {
-                myNews.map((noticia) => {
-                    return (
-                        <div>
-                            <ViewShowNews itle={noticia.title} date={noticia.date} body={noticia.body}></ViewShowNews>
-                            <button value={noticia.uuid}>Excluir</button>
-                        </div>
-                    )
-                })
-            }
+
+            {newsFeed}
 
             <a href="/">Voltar para a home</a>
         </div>
